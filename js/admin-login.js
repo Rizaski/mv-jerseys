@@ -17,20 +17,20 @@ class AdminLogin {
         const closeAdminLogin = document.getElementById('close-admin-login');
         const adminLoginForm = document.getElementById('admin-login-form');
 
-        // Open admin login modal
-        if (adminPanelBtn && adminLoginModal) {
+        // Open admin panel in new window
+        if (adminPanelBtn) {
             adminPanelBtn.addEventListener('click', (e) => {
                 e.preventDefault();
                 console.log('Admin panel button clicked');
-                adminLoginModal.classList.remove('hidden');
+                window.open('https://admin-otomono.vercel.app/', '_blank');
             });
         }
 
-        if (mobileAdminPanelBtn && adminLoginModal) {
+        if (mobileAdminPanelBtn) {
             mobileAdminPanelBtn.addEventListener('click', (e) => {
                 e.preventDefault();
                 console.log('Mobile admin panel button clicked');
-                adminLoginModal.classList.remove('hidden');
+                window.open('https://admin-otomono.vercel.app/', '_blank');
             });
         }
 
@@ -60,17 +60,28 @@ class AdminLogin {
                 console.log('Admin login attempt:', email);
 
                 // Simple admin credentials check
-                const validAdmins = [
-                    { email: 'admin@otomono.com', password: 'admin123', name: 'Admin User' },
-                    { email: 'staff@otomono.com', password: 'staff123', name: 'Staff User' },
-                    { email: 'miicrossoft@gmail.com', password: 'admin123', name: 'Admin User' }
+                const validAdmins = [{
+                        email: 'admin@otomono.com',
+                        password: 'admin123',
+                        name: 'Admin User'
+                    },
+                    {
+                        email: 'staff@otomono.com',
+                        password: 'staff123',
+                        name: 'Staff User'
+                    },
+                    {
+                        email: 'miicrossoft@gmail.com',
+                        password: 'admin123',
+                        name: 'Admin User'
+                    }
                 ];
 
                 const admin = validAdmins.find(a => a.email === email && a.password === password);
 
                 if (admin) {
                     console.log('Admin authentication successful:', admin);
-                    
+
                     // Store admin session
                     localStorage.setItem('adminUser', JSON.stringify({
                         id: 'admin_' + Date.now(),
@@ -85,19 +96,19 @@ class AdminLogin {
                     const originalText = submitBtn.textContent;
                     submitBtn.textContent = 'Login Successful!';
                     submitBtn.classList.add('bg-green-600');
-                    
+
                     setTimeout(() => {
                         window.location.href = 'admin-panel.html';
                     }, 1500);
                 } else {
                     console.log('Admin authentication failed');
-                    
+
                     // Show error message
                     const submitBtn = adminLoginForm.querySelector('button[type="submit"]');
                     const originalText = submitBtn.textContent;
                     submitBtn.textContent = 'Invalid Credentials';
                     submitBtn.classList.add('bg-red-600');
-                    
+
                     setTimeout(() => {
                         submitBtn.textContent = originalText;
                         submitBtn.classList.remove('bg-red-600');
