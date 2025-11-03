@@ -11,6 +11,17 @@ import sys
 import webbrowser
 from pathlib import Path
 
+# Fix encoding for Windows console
+if sys.platform == 'win32':
+    import io
+    try:
+        if hasattr(sys.stdout, 'buffer'):
+            sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
+        if hasattr(sys.stderr, 'buffer'):
+            sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8', errors='replace')
+    except Exception:
+        pass  # If encoding fix fails, continue anyway
+
 # Configuration
 PORT = 8000
 HOST = 'localhost'
@@ -48,17 +59,17 @@ def start_server():
             print(f"📍 Server running at: http://{HOST}:{PORT}")
             print(f"📁 Serving files from: {os.getcwd()}")
             print("=" * 60)
-                print("🔗 Quick Links:")
-                print(f"   • Main Site: http://{HOST}:{PORT}/index.html")
-                print(f"   • Admin Panel: http://{HOST}:{PORT}/admin-panel.html")
-                print(f"   • 🚨 FIX PERMISSIONS: http://{HOST}:{PORT}/firebase-rules-implementation.html")
-                print(f"   • Firebase Setup Guide: http://{HOST}:{PORT}/firebase-setup-guide.html")
-                print(f"   • Firebase Permissions Guide: http://{HOST}:{PORT}/firebase-permissions-guide.html")
-                print(f"   • Order Test: http://{HOST}:{PORT}/quick-order-test.html")
-                print(f"   • Full Test: http://{HOST}:{PORT}/test-order-saving.html")
-                print(f"   • OrderManager Test: http://{HOST}:{PORT}/test-order-manager.html")
-                print(f"   • Order Diagnostic: http://{HOST}:{PORT}/order-diagnostic.html")
-                print(f"   • Firebase Test: http://{HOST}:{PORT}/firebase-test.html")
+            print("🔗 Quick Links:")
+            print(f"   • Main Site: http://{HOST}:{PORT}/index.html")
+            print(f"   • Admin Panel: http://{HOST}:{PORT}/admin-panel.html")
+            print(f"   • 🚨 FIX PERMISSIONS: http://{HOST}:{PORT}/firebase-rules-implementation.html")
+            print(f"   • Firebase Setup Guide: http://{HOST}:{PORT}/firebase-setup-guide.html")
+            print(f"   • Firebase Permissions Guide: http://{HOST}:{PORT}/firebase-permissions-guide.html")
+            print(f"   • Order Test: http://{HOST}:{PORT}/quick-order-test.html")
+            print(f"   • Full Test: http://{HOST}:{PORT}/test-order-saving.html")
+            print(f"   • OrderManager Test: http://{HOST}:{PORT}/test-order-manager.html")
+            print(f"   • Order Diagnostic: http://{HOST}:{PORT}/order-diagnostic.html")
+            print(f"   • Firebase Test: http://{HOST}:{PORT}/firebase-test.html")
             print("=" * 60)
             print("💡 Press Ctrl+C to stop the server")
             print("=" * 60)
@@ -95,31 +106,40 @@ def start_server():
 def check_files():
     """Check if required files exist"""
     required_files = [
-        'index.html',
+        'index.html'
+    ]
+    
+    optional_files = [
         'js/order-manager.js',
         'quick-order-test.html',
         'test-order-saving.html'
     ]
     
-    missing_files = []
+    missing_required = []
+    missing_optional = []
+    
     for file in required_files:
         if not os.path.exists(file):
-            missing_files.append(file)
+            missing_required.append(file)
     
-    if missing_files:
-        print("⚠️  Warning: Some files are missing:")
-        for file in missing_files:
+    for file in optional_files:
+        if not os.path.exists(file):
+            missing_optional.append(file)
+    
+    if missing_required:
+        print("❌ Error: Required files are missing:")
+        for file in missing_required:
             print(f"   • {file}")
         print("\n💡 Make sure you're running this from the project root directory")
-        print("📁 Expected structure:")
-        print("   Otomono-Jerseys/")
-        print("   ├── index.html")
-        print("   ├── js/order-manager.js")
-        print("   ├── quick-order-test.html")
-        print("   └── server.py")
+        return False
+    
+    if missing_optional:
+        print("⚠️  Note: Some optional files are missing (server will still start):")
+        for file in missing_optional:
+            print(f"   • {file}")
         print()
     
-    return len(missing_files) == 0
+    return True
 
 if __name__ == "__main__":
     # Parse command line arguments
@@ -138,7 +158,7 @@ if __name__ == "__main__":
     
     # Check if we're in the right directory
     if not check_files():
-        print("❌ Please run this script from the Otomono-Jerseys project directory")
+        print("❌ Please run this script from the project root directory")
         sys.exit(1)
     
     # Start the server
